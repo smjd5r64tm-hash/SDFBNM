@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Student Dashboard</title>
+    <title>2026 Skills Quest</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-body: #0a0a0a;
@@ -12,9 +13,11 @@
             --bg-hover: #2c2c2e;
             --text-main: #f5f5f7;
             --text-sub: #86868b;
-            --accent: #ff9f0a; /* Apple-like Orange */
+            --accent: #ff9f0a; /* Orange for highlights */
+            --accent-glow: rgba(255, 159, 10, 0.5);
             --border: #38383a;
-            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-stack: 'Rajdhani', sans-serif; /* Game-like font */
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,97 +25,185 @@
         body {
             background-color: var(--bg-body);
             color: var(--text-main);
-            font-family: var(--font-stack);
+            font-family: var(--font-body);
             height: 100vh;
             overflow: hidden;
             display: flex;
+            flex-direction: column; /* Stack nav and stage vertically */
         }
 
-        /* --- SIDEBAR TIMELINE --- */
-        .sidebar {
-            width: 300px;
+        h1, h2, h3, .brand, .section-title, .timeline-title, .milestone-icon {
+            font-family: var(--font-stack);
+            text-transform: uppercase;
+        }
+
+        /* --- TOP HORIZONTAL NAVIGATION --- */
+        .top-nav {
+            width: 100%;
+            height: 130px; /* Fixed height for nav bar */
             background-color: #000;
-            border-right: 1px solid var(--border);
-            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            overflow-x: auto; /* Enable horizontal scroll */
+            overflow-y: hidden;
+            white-space: nowrap; /* Keep items on one line */
+            scrollbar-width: thin; /* For Firefox */
+            scrollbar-color: var(--accent) var(--bg-body);
+        }
+
+        /* Custom scrollbar for Webkit */
+        .top-nav::-webkit-scrollbar {
+            height: 8px;
+        }
+        .top-nav::-webkit-scrollbar-track {
+            background: var(--bg-body);
+        }
+        .top-nav::-webkit-scrollbar-thumb {
+            background-color: var(--accent);
+            border-radius: 4px;
+        }
+
+        .brand-container {
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
+            margin-right: 30px;
+            flex-shrink: 0; /* Prevent shrinking */
+            padding-left: 10px;
         }
 
         .brand {
-            font-size: 0.9rem;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
+            font-size: 1.4rem;
+            color: var(--accent);
             font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+        
+        .brand-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            font-family: var(--font-stack);
+        }
+
+        #nav-container {
+            display: flex;
+            gap: 15px;
+            height: 100%;
+            align-items: center;
+            padding-right: 20px;
         }
 
         .timeline-item {
-            padding: 15px 15px 15px 25px;
-            margin-bottom: 5px;
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 200px;
+            height: 90px;
+            padding: 15px;
             cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            border-left: 2px solid #333;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background-color: var(--bg-panel);
+            border: 1px solid transparent;
             position: relative;
+            overflow: hidden;
         }
 
         .timeline-item:hover {
             background-color: var(--bg-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
         .timeline-item.active {
-            background-color: var(--bg-panel);
-            border-left: 2px solid var(--accent);
+            background: linear-gradient(to bottom right, rgba(255, 159, 10, 0.15), var(--bg-panel));
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(255, 159, 10, 0.3);
         }
 
-        .timeline-item.active h3 { color: var(--accent); }
+        /* Add a subtle progress bar effect to active item */
+        .timeline-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            animation: progress-loading 1.5s ease-out forwards;
+        }
+        
+        @keyframes progress-loading {
+            from { width: 0%; opacity: 0; }
+            to { width: 100%; opacity: 1; }
+        }
 
         .timeline-date {
             font-size: 0.75rem;
             color: var(--text-sub);
-            margin-bottom: 4px;
+            margin-bottom: 5px;
             display: block;
+            font-family: var(--font-stack);
+            letter-spacing: 1px;
         }
 
         .timeline-title {
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.2rem;
+            font-weight: 700;
             color: var(--text-main);
+            transition: color 0.3s;
         }
+        
+        .timeline-item.active .timeline-title { color: var(--accent); }
 
         .timeline-desc {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-sub);
-            margin-top: 4px;
+            margin-top: 5px;
+            white-space: normal; /* Allow text to wrap */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1; /* Limit to 1 line */
+            -webkit-box-orient: vertical;
+            opacity: 0.8;
         }
 
         /* --- MAIN STAGE --- */
         .main-stage {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
+            flex: 1; /* Fill remaining height */
+            padding: 30px 40px;
+            overflow-y: auto; /* Keep vertical scroll for content */
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr; /* Content vs Chart */
+            grid-template-columns: 1.2fr 0.8fr;
             grid-template-rows: auto 1fr;
             gap: 30px;
-            background: radial-gradient(circle at top right, #1a1a1a 0%, #0a0a0a 40%);
+            background: radial-gradient(circle at center top, #1a1a1a 0%, #0a0a0a 70%);
         }
 
         /* Header Area */
         .stage-header {
             grid-column: 1 / -1;
             margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
         }
         .stage-header h1 {
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--accent-glow);
+            letter-spacing: 2px;
         }
         .stage-header p {
             color: var(--text-sub);
-            font-size: 1.1rem;
+            font-size: 1.3rem;
+            font-family: var(--font-stack);
+            letter-spacing: 1px;
         }
 
         /* Tasks Section (Left) */
@@ -121,92 +212,184 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Subtle grid background for tasks */
+        .tasks-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .section-title {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-sub);
-            margin-bottom: 20px;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-title::before {
+            content: '►';
+            color: var(--accent);
+            font-size: 0.8rem;
+            text-shadow: 0 0 5px var(--accent);
         }
 
         .task-item {
             display: flex;
             align-items: flex-start;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            transition: 0.2s;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .task-item:hover {
+            background: rgba(255,255,255,0.03);
+            padding-left: 15px; /* Subtle shift */
         }
 
         .task-item:last-child { border-bottom: none; }
 
         .checkbox {
-            width: 20px;
-            height: 20px;
+            width: 26px;
+            height: 26px;
             border: 2px solid var(--text-sub);
-            border-radius: 4px;
-            margin-right: 15px;
-            margin-top: 3px;
+            border-radius: 6px;
+            margin-right: 20px;
+            margin-top: 2px;
             cursor: pointer;
             position: relative;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy effect */
+            background: rgba(0,0,0,0.3);
+        }
+
+        .checkbox:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
         }
 
         .checkbox.checked {
             background-color: var(--accent);
             border-color: var(--accent);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
         .checkbox.checked::after {
             content: '✔';
             position: absolute;
-            font-size: 12px;
+            font-size: 18px;
             color: #000;
-            top: -1px;
+            top: -2px;
             left: 3px;
+            font-weight: bold;
         }
 
         .task-content { flex: 1; }
-        .task-time { font-size: 0.8rem; color: var(--accent); font-weight: 600; display: block; margin-bottom: 4px; }
-        .task-name { font-size: 1rem; font-weight: 500; }
+        .task-time { font-size: 0.9rem; color: var(--accent); font-weight: 700; display: block; margin-bottom: 5px; font-family: var(--font-stack); letter-spacing: 1px; }
+        .task-name { font-size: 1.15rem; font-weight: 500; }
         .task-subject { 
-            font-size: 0.7rem; 
-            background: #333; 
-            padding: 2px 6px; 
+            font-size: 0.8rem; 
+            background: rgba(255, 159, 10, 0.15);
+            border: 1px solid rgba(255, 159, 10, 0.4);
+            padding: 4px 10px; 
             border-radius: 4px; 
-            margin-left: 8px; 
+            margin-left: 12px; 
             vertical-align: middle; 
-            color: #ccc;
+            color: var(--accent);
+            font-weight: 700;
+            font-family: var(--font-stack);
+            letter-spacing: 1px;
+            box-shadow: 0 0 5px rgba(255, 159, 10, 0.2);
         }
 
         /* Stats & Chart Section (Right) */
         .stats-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 30px;
         }
 
         .chart-card {
             background-color: var(--bg-panel);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 20px;
-            height: 350px;
+            padding: 25px;
+            height: 380px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Game-like Milestone Card */
+        .milestone-card {
+            background: linear-gradient(135deg, rgba(58, 28, 5, 0.9), rgba(22, 22, 24, 0.95));
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 159, 10, 0.25);
+            transition: transform 0.3s ease;
+        }
+        
+        .milestone-card:hover {
+            transform: scale(1.03);
+        }
+
+        /* Adds a subtle glowing scanline effect */
+        .milestone-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 159, 10, 0.3), transparent);
+            animation: scanline 4s linear infinite;
+            transform: skewX(-20deg);
+        }
+        
+        @keyframes scanline {
+            0% { left: -150%; }
+            100% { left: 150%; }
+        }
+
+        .milestone-icon { 
+            font-size: 2rem; 
+            margin-bottom: 15px; 
+            display: flex; 
+            align-items: center;
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--accent-glow);
             position: relative;
         }
+        
+        .milestone-icon span { margin-left: 15px; letter-spacing: 2px; }
 
-        .milestone-card {
-            background: linear-gradient(45deg, #3a1c05, #161618);
-            border: 1px solid var(--accent);
-            border-radius: 12px;
-            padding: 20px;
+        .milestone-text { 
+            font-size: 1.1rem; 
+            color: #ffcc80; 
+            font-weight: 500;
+            line-height: 1.6;
+            position: relative; /* To appear above the scanline */
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
-
-        .milestone-icon { font-size: 1.5rem; margin-bottom: 10px; display: block; }
-        .milestone-text { font-size: 0.9rem; color: #ffcc80; }
 
         /* Welcome Screen Overlay */
         #welcome-overlay {
@@ -218,40 +401,103 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.7s ease-in-out;
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 70%);
+        }
+        .welcome-title {
+            font-size: 5rem;
+            font-weight: 700;
+            letter-spacing: 5px;
+            color: var(--accent);
+            text-shadow: 0 0 30px var(--accent-glow), 0 0 10px var(--accent);
+            margin-bottom: 30px;
         }
         .start-btn {
-            padding: 15px 40px;
+            padding: 20px 70px;
             background: transparent;
-            border: 1px solid var(--text-main);
-            color: var(--text-main);
-            font-size: 1.2rem;
+            border: 3px solid var(--accent);
+            color: var(--accent);
+            font-size: 1.8rem;
+            font-family: var(--font-stack);
+            font-weight: 700;
             cursor: pointer;
-            border-radius: 30px;
-            margin-top: 20px;
-            transition: 0.3s;
+            border-radius: 4px; /* More angular for game feel */
+            margin-top: 40px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 159, 10, 0.3);
+        }
+        .start-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--accent);
+            z-index: -1;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform: scaleX(0);
+            transform-origin: right;
         }
         .start-btn:hover {
-            background: var(--text-main);
             color: #000;
+            box-shadow: 0 0 50px var(--accent-glow);
+            border-color: var(--accent);
+        }
+        .start-btn:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        .start-btn:active {
+            transform: scale(0.95);
         }
 
         /* Mobile Responsive */
-        @media (max-width: 900px) {
-            .main-stage { grid-template-columns: 1fr; }
-            .sidebar { display: none; /* In a real app, use a hamburger menu */ }
+        @media (max-width: 1024px) {
+             .main-stage { 
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .chart-card { height: 300px; }
+        }
+
+        @media (max-width: 768px) {
+            .main-stage { 
+                padding: 20px;
+            }
+            .top-nav {
+                height: 120px;
+                padding: 10px 15px;
+            }
+            .brand-container {
+                margin-right: 15px;
+            }
+            .brand { font-size: 1.2rem; }
+            .timeline-item {
+                min-width: 160px;
+                height: 85px;
+                padding: 12px;
+            }
+            .stage-header h1 { font-size: 2.5rem; }
+            .stage-header p { font-size: 1.1rem; }
+            .welcome-title { font-size: 3rem; }
+            .start-btn { font-size: 1.4rem; padding: 15px 40px; }
         }
     </style>
 </head>
 <body>
 
     <div id="welcome-overlay">
-        <h1 style="font-weight: 300; letter-spacing: 2px;">STUDY ROADMAP 2026</h1>
-        <button class="start-btn" onclick="startApp()">Initialize Dashboard</button>
+        <h1 class="welcome-title">SKILLS QUEST 2026</h1>
+        <button class="start-btn" onclick="startApp()">Initialize System</button>
     </div>
 
-    <div class="sidebar">
-        <div class="brand">Weekly Timeline</div>
+    <div class="top-nav">
+        <div class="brand-container">
+            <div class="brand">MISSION TIMELINE</div>
+            <div class="brand-subtitle">Select Objective</div>
+        </div>
         <div id="nav-container">
             </div>
     </div>
@@ -260,12 +506,12 @@
         
         <div class="stage-header">
             <h1 id="day-title">Monday</h1>
-            <p id="day-subtitle">Focus: Algorithms & Calculus</p>
+            <p id="day-subtitle">Focus: Foundations & Logic</p>
         </div>
 
         <div class="tasks-container">
             <div class="section-title">
-                <span>KEY ACTIONS & DRILLS</span>
+                <span>MISSION OBJECTIVES</span>
             </div>
             <div id="task-list">
                 </div>
@@ -274,12 +520,12 @@
         <div class="stats-container">
             
             <div class="chart-card">
-                <div class="section-title">SKILL COMPOSITION</div>
+                <div class="section-title">ATTRIBUTE COMPOSITION</div>
                 <canvas id="skillChart"></canvas>
             </div>
 
             <div class="milestone-card">
-                <span class="milestone-icon">🏁 Milestone Goal</span>
+                <div class="milestone-icon">🏆 <span>CRITICAL ACHIEVEMENT</span></div>
                 <div class="milestone-text" id="milestone-text">
                     Complete all numericals with >90% accuracy before sleeping.
                 </div>
@@ -289,12 +535,12 @@
     </div>
 
     <script>
-        // --- DATA OBJECT ---
+        // --- DATA OBJECT (Same as before) ---
         const scheduleData = {
             "Monday": {
                 focus: "Foundations & Logic",
                 stats: [80, 70, 40, 30, 60], // [Technical, Math, Creative, Comm, ProbSolv]
-                milestone: "Master Chapter 1 Numericals and configure Git environment.",
+                milestone: "Master Chapter 1 Numericals and configure Git environment with zero errors.",
                 tasks: [
                     { time: "18:30 - 19:30", subject: "SPCM", title: "NPTEL Harbola Lecture + Notes" },
                     { time: "19:45 - 20:45", subject: "OODP", title: "Stanford CS106B Coding Practice" },
@@ -306,7 +552,7 @@
             "Tuesday": {
                 focus: "Circuits & Math",
                 stats: [60, 90, 30, 20, 50],
-                milestone: "Complete MIT 6.002 Problem Set without hints.",
+                milestone: "Complete MIT 6.002 Problem Set without using any hints.",
                 tasks: [
                     { time: "18:30 - 20:00", subject: "ACCA", title: "NPTEL Lecture + Problems" },
                     { time: "20:15 - 21:15", subject: "EEE", title: "MIT 6.002 Lecture + Numericals" },
@@ -317,7 +563,7 @@
             "Wednesday": {
                 focus: "Coding & Communication",
                 stats: [85, 40, 50, 80, 70],
-                milestone: "Speak for 15 mins non-stop & Solve 2 Medium LeetCode problems.",
+                milestone: "Speak for 15 mins non-stop on a tech topic & solve 2 Medium LeetCode problems.",
                 tasks: [
                     { time: "18:30 - 19:30", subject: "SPCM", title: "Harbola Lecture + Notes" },
                     { time: "19:45 - 20:45", subject: "OODP", title: "C++ Coding Practice" },
@@ -328,7 +574,7 @@
             "Thursday": {
                 focus: "Deep Work & Systems",
                 stats: [75, 80, 40, 30, 85],
-                milestone: "Derive all SPCM formulas from scratch.",
+                milestone: "Derive all SPCM formulas from scratch without looking at notes.",
                 tasks: [
                     { time: "18:30 - 20:00", subject: "ACCA", title: "Chapter 1 Deep Practice" },
                     { time: "20:15 - 21:15", subject: "SPCM", title: "Formulas + Octave Work" },
@@ -338,7 +584,7 @@
             "Friday": {
                 focus: "Engineering & Interview",
                 stats: [90, 60, 40, 60, 80],
-                milestone: "Simulate a 30-min coding interview session.",
+                milestone: "Complete a simulated 30-minute coding interview session successfully.",
                 tasks: [
                     { time: "18:30 - 19:45", subject: "EEE", title: "MIT Lecture + Problems" },
                     { time: "20:00 - 21:30", subject: "OODP", title: "Stanford CS106B Session" },
@@ -348,7 +594,7 @@
             "Saturday": {
                 focus: "High Volume Practice",
                 stats: [80, 80, 60, 20, 90],
-                milestone: "Clear backlog of SPCM numericals.",
+                milestone: "Clear entire backlog of SPCM numericals and two ACCA problem sets.",
                 tasks: [
                     { time: "17:00 - 19:00", subject: "SPCM", title: "2 Lectures + Numericals" },
                     { time: "19:15 - 20:45", subject: "ACCA", title: "Mixed Problems" },
@@ -359,7 +605,7 @@
             "Sunday": {
                 focus: "Revision & Portfolio",
                 stats: [50, 50, 80, 50, 60],
-                milestone: "Update GitHub Portfolio and plan next week.",
+                milestone: "Finalize GitHub Portfolio project update and plan next week's roadmap.",
                 tasks: [
                     { time: "16:30 - 18:00", subject: "ACCA", title: "Full Revision" },
                     { time: "18:15 - 19:45", subject: "EEE", title: "Revision + MIT Numericals" },
@@ -374,32 +620,64 @@
 
         function initChart() {
             const ctx = document.getElementById('skillChart').getContext('2d');
+            Chart.defaults.font.family = "'Rajdhani', sans-serif"; // Use game font for chart
             skillChart = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: ['Technical', 'Math', 'Creative', 'Communication', 'Problem Solving'],
+                    labels: ['TECH', 'MATH', 'CREATIVE', 'COMM', 'PROBLEM SOLVING'],
                     datasets: [{
-                        label: 'Relative Intensity',
-                        data: [0,0,0,0,0], // Initial dummy data
+                        label: 'Attribute Level',
+                        data: [0,0,0,0,0],
                         backgroundColor: 'rgba(255, 159, 10, 0.2)',
                         borderColor: '#ff9f0a',
-                        pointBackgroundColor: '#fff',
-                        borderWidth: 2
+                        pointBackgroundColor: '#ff9f0a',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#ff9f0a',
+                        borderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 8
                     }]
                 },
                 options: {
                     scales: {
                         r: {
-                            angleLines: { color: '#333' },
-                            grid: { color: '#333' },
-                            pointLabels: { color: '#888', font: {size: 10} },
+                            angleLines: { color: 'rgba(255,255,255,0.15)' },
+                            grid: { color: 'rgba(255,255,255,0.15)' },
+                            pointLabels: { 
+                                color: '#86868b', 
+                                font: { size: 13, weight: '600', family: "'Rajdhani', sans-serif" },
+                                padding: 10
+                            },
                             suggestedMin: 0,
                             suggestedMax: 100,
-                            ticks: { display: false } // Hide numbers on axis
+                            ticks: { display: false, backdropColor: 'transparent' }
                         }
                     },
-                    plugins: { legend: { display: false } },
-                    maintainAspectRatio: false
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(22, 22, 24, 0.95)',
+                            titleColor: '#ff9f0a',
+                            bodyColor: '#f5f5f7',
+                            borderColor: '#ff9f0a',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            titleFont: { family: "'Rajdhani', sans-serif", size: 14 },
+                            bodyFont: { family: var(--font-body) },
+                            callbacks: {
+                                label: function(context) {
+                                    return ` Level: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeInOutQuart'
+                    }
                 }
             });
         }
@@ -410,13 +688,13 @@
             document.getElementById('welcome-overlay').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('welcome-overlay').style.display = 'none';
-                renderSidebar();
-                loadDay('Monday'); // Load first day
-            }, 500);
+                renderNav();
+                loadDay('Monday');
+            }, 700);
             initChart();
         }
 
-        function renderSidebar() {
+        function renderNav() {
             const container = document.getElementById('nav-container');
             container.innerHTML = '';
             
@@ -425,7 +703,7 @@
                 item.className = 'timeline-item';
                 item.onclick = () => loadDay(day);
                 item.innerHTML = `
-                    <span class="timeline-date">WEEKLY</span>
+                    <span class="timeline-date">DAY // ${day.toUpperCase().substring(0, 3)}</span>
                     <div class="timeline-title">${day}</div>
                     <div class="timeline-desc">${scheduleData[day].focus}</div>
                 `;
@@ -435,27 +713,44 @@
         }
 
         function loadDay(day) {
-            // Update Active Sidebar State
-            document.querySelectorAll('.timeline-item').forEach(el => {
+            const navItems = document.querySelectorAll('.timeline-item');
+            navItems.forEach(el => {
                 el.classList.remove('active');
-                if(el.dataset.day === day) el.classList.add('active');
+                if(el.dataset.day === day) {
+                    el.classList.add('active');
+                    // Auto-scroll to the active item centers it
+                    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
             });
 
             const data = scheduleData[day];
 
-            // Update Header
-            document.getElementById('day-title').innerText = day;
-            document.getElementById('day-subtitle').innerText = "Focus: " + data.focus;
+            // Animate Header Update
+            const title = document.getElementById('day-title');
+            const subtitle = document.getElementById('day-subtitle');
+            
+            title.style.opacity = 0;
+            subtitle.style.opacity = 0;
+            title.style.transform = 'translateY(-10px)';
+            
+            setTimeout(() => {
+                title.innerText = day;
+                subtitle.innerText = "Focus: " + data.focus;
+                title.style.opacity = 1;
+                subtitle.style.opacity = 1;
+                title.style.transform = 'translateY(0)';
+            }, 250);
+
             document.getElementById('milestone-text').innerText = data.milestone;
 
-            // Update Tasks with Animation
+            // Update Tasks with Staggered Animation
             const taskContainer = document.getElementById('task-list');
             taskContainer.innerHTML = '';
             
             data.tasks.forEach((task, index) => {
                 const div = document.createElement('div');
                 div.className = 'task-item';
-                div.style.animation = `fadeIn 0.3s ease forwards ${index * 0.1}s`;
+                div.style.animation = `slideIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards ${index * 0.08}s`;
                 div.innerHTML = `
                     <div class="checkbox" onclick="this.classList.toggle('checked')"></div>
                     <div class="task-content">
@@ -473,13 +768,14 @@
             }
         }
 
-        // Add fade animation style dynamically
+        // Add animations dynamically
         const style = document.createElement('style');
         style.innerHTML = `
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
+            @keyframes slideIn {
+                from { opacity: 0; transform: translateX(-30px); }
+                to { opacity: 1; transform: translateX(0); }
             }
+            #day-title, #day-subtitle { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
         `;
         document.head.appendChild(style);
 
