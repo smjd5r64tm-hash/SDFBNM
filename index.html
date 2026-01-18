@@ -13,10 +13,10 @@
             --bg-hover: #2c2c2e;
             --text-main: #f5f5f7;
             --text-sub: #86868b;
-            --accent: #ff9f0a; /* Orange for highlights */
+            --accent: #ff9f0a;
             --accent-glow: rgba(255, 159, 10, 0.5);
             --border: #38383a;
-            --font-stack: 'Rajdhani', sans-serif; /* Game-like font */
+            --font-stack: 'Rajdhani', sans-serif;
             --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -29,7 +29,7 @@
             height: 100vh;
             overflow: hidden;
             display: flex;
-            flex-direction: column; /* Stack nav and stage vertically */
+            flex-direction: column;
         }
 
         h1, h2, h3, .brand, .section-title, .timeline-title, .milestone-icon {
@@ -37,40 +37,26 @@
             text-transform: uppercase;
         }
 
-        /* --- TOP HORIZONTAL NAVIGATION --- */
+        /* NAVIGATION */
         .top-nav {
             width: 100%;
-            height: 130px; /* Fixed height for nav bar */
+            height: 130px;
             background-color: #000;
             border-bottom: 1px solid var(--border);
             padding: 10px 20px;
             display: flex;
             align-items: center;
-            overflow-x: auto; /* Enable horizontal scroll */
-            overflow-y: hidden;
-            white-space: nowrap; /* Keep items on one line */
-            scrollbar-width: thin; /* For Firefox */
-            scrollbar-color: var(--accent) var(--bg-body);
+            overflow-x: auto;
+            white-space: nowrap;
         }
-
-        /* Custom scrollbar for Webkit */
-        .top-nav::-webkit-scrollbar {
-            height: 8px;
-        }
-        .top-nav::-webkit-scrollbar-track {
-            background: var(--bg-body);
-        }
-        .top-nav::-webkit-scrollbar-thumb {
-            background-color: var(--accent);
-            border-radius: 4px;
-        }
+        
+        .top-nav::-webkit-scrollbar { height: 6px; }
+        .top-nav::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
         .brand-container {
-            display: flex;
-            flex-direction: column;
             margin-right: 30px;
-            flex-shrink: 0; /* Prevent shrinking */
             padding-left: 10px;
+            flex-shrink: 0;
         }
 
         .brand {
@@ -104,79 +90,29 @@
             padding: 15px;
             cursor: pointer;
             border-radius: 12px;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             background-color: var(--bg-panel);
             border: 1px solid transparent;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s ease;
         }
 
-        .timeline-item:hover {
-            background-color: var(--bg-hover);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
+        .timeline-item:hover { transform: translateY(-3px); background-color: var(--bg-hover); }
 
         .timeline-item.active {
             background: linear-gradient(to bottom right, rgba(255, 159, 10, 0.15), var(--bg-panel));
             border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(255, 159, 10, 0.3);
+            box-shadow: 0 0 15px rgba(255, 159, 10, 0.2);
         }
 
-        /* Add a subtle progress bar effect to active item */
-        .timeline-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            width: 100%;
-            background: var(--accent);
-            box-shadow: 0 0 10px var(--accent);
-            animation: progress-loading 1.5s ease-out forwards;
-        }
-        
-        @keyframes progress-loading {
-            from { width: 0%; opacity: 0; }
-            to { width: 100%; opacity: 1; }
-        }
-
-        .timeline-date {
-            font-size: 0.75rem;
-            color: var(--text-sub);
-            margin-bottom: 5px;
-            display: block;
-            font-family: var(--font-stack);
-            letter-spacing: 1px;
-        }
-
-        .timeline-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-main);
-            transition: color 0.3s;
-        }
-        
+        .timeline-date { font-size: 0.75rem; color: var(--text-sub); display: block; letter-spacing: 1px; margin-bottom: 4px; }
+        .timeline-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
         .timeline-item.active .timeline-title { color: var(--accent); }
+        .timeline-desc { font-size: 0.8rem; color: var(--text-sub); opacity: 0.8; margin-top: 4px; }
 
-        .timeline-desc {
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            margin-top: 5px;
-            white-space: normal; /* Allow text to wrap */
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 1; /* Limit to 1 line */
-            -webkit-box-orient: vertical;
-            opacity: 0.8;
-        }
-
-        /* --- MAIN STAGE --- */
+        /* MAIN CONTENT */
         .main-stage {
-            flex: 1; /* Fill remaining height */
+            flex: 1;
             padding: 30px 40px;
-            overflow-y: auto; /* Keep vertical scroll for content */
+            overflow-y: auto;
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
             grid-template-rows: auto 1fr;
@@ -184,306 +120,95 @@
             background: radial-gradient(circle at center top, #1a1a1a 0%, #0a0a0a 70%);
         }
 
-        /* Header Area */
-        .stage-header {
-            grid-column: 1 / -1;
-            margin-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 20px;
-        }
-        .stage-header h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--accent);
-            text-shadow: 0 0 15px var(--accent-glow);
-            letter-spacing: 2px;
-        }
-        .stage-header p {
-            color: var(--text-sub);
-            font-size: 1.3rem;
-            font-family: var(--font-stack);
-            letter-spacing: 1px;
-        }
+        .stage-header { grid-column: 1 / -1; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+        .stage-header h1 { font-size: 3.5rem; font-weight: 700; color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); margin: 0; }
+        .stage-header p { color: var(--text-sub); font-size: 1.3rem; font-family: var(--font-stack); margin-top: 5px; }
 
-        /* Tasks Section (Left) */
         .tasks-container {
             background-color: var(--bg-panel);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Subtle grid background for tasks */
-        .tasks-container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
-            pointer-events: none;
-            z-index: 0;
         }
 
-        .section-title {
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-            color: var(--text-main);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .section-title::before {
-            content: '►';
-            color: var(--accent);
-            font-size: 0.8rem;
-            text-shadow: 0 0 5px var(--accent);
-        }
+        .section-title { font-size: 1.1rem; letter-spacing: 2px; color: var(--text-main); margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .section-title::before { content: '►'; color: var(--accent); font-size: 0.8rem; }
 
         .task-item {
             display: flex;
             align-items: flex-start;
-            padding: 18px 0;
+            padding: 15px 0;
             border-bottom: 1px solid rgba(255,255,255,0.08);
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
+            transition: 0.2s;
         }
-        
-        .task-item:hover {
-            background: rgba(255,255,255,0.03);
-            padding-left: 15px; /* Subtle shift */
-        }
-
-        .task-item:last-child { border-bottom: none; }
+        .task-item:hover { background: rgba(255,255,255,0.03); padding-left: 10px; }
 
         .checkbox {
-            width: 26px;
-            height: 26px;
-            border: 2px solid var(--text-sub);
-            border-radius: 6px;
-            margin-right: 20px;
-            margin-top: 2px;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy effect */
-            background: rgba(0,0,0,0.3);
+            width: 24px; height: 24px; border: 2px solid var(--text-sub); border-radius: 6px; margin-right: 15px; cursor: pointer; position: relative;
+            background: rgba(0,0,0,0.3); transition: 0.2s;
         }
-
-        .checkbox:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 10px var(--accent-glow);
-        }
-
-        .checkbox.checked {
-            background-color: var(--accent);
-            border-color: var(--accent);
-            transform: scale(1.1);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        .checkbox.checked::after {
-            content: '✔';
-            position: absolute;
-            font-size: 18px;
-            color: #000;
-            top: -2px;
-            left: 3px;
-            font-weight: bold;
-        }
+        .checkbox.checked { background-color: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+        .checkbox.checked::after { content: '✔'; position: absolute; color: #000; top: -3px; left: 4px; font-weight: bold; font-size: 16px; }
 
         .task-content { flex: 1; }
-        .task-time { font-size: 0.9rem; color: var(--accent); font-weight: 700; display: block; margin-bottom: 5px; font-family: var(--font-stack); letter-spacing: 1px; }
-        .task-name { font-size: 1.15rem; font-weight: 500; }
+        .task-time { font-size: 0.85rem; color: var(--accent); font-weight: 700; display: block; margin-bottom: 3px; font-family: var(--font-stack); }
+        .task-name { font-size: 1.1rem; }
         .task-subject { 
-            font-size: 0.8rem; 
-            background: rgba(255, 159, 10, 0.15);
-            border: 1px solid rgba(255, 159, 10, 0.4);
-            padding: 4px 10px; 
-            border-radius: 4px; 
-            margin-left: 12px; 
-            vertical-align: middle; 
-            color: var(--accent);
-            font-weight: 700;
-            font-family: var(--font-stack);
-            letter-spacing: 1px;
-            box-shadow: 0 0 5px rgba(255, 159, 10, 0.2);
+            font-size: 0.75rem; background: rgba(255, 159, 10, 0.15); border: 1px solid rgba(255, 159, 10, 0.4); 
+            padding: 2px 8px; border-radius: 4px; margin-left: 10px; color: var(--accent); font-family: var(--font-stack);
         }
 
-        /* Stats & Chart Section (Right) */
-        .stats-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
+        .stats-container { display: flex; flex-direction: column; gap: 30px; }
 
         .chart-card {
             background-color: var(--bg-panel);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 25px;
-            height: 380px;
+            padding: 20px;
+            height: 350px;
             position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* Game-like Milestone Card */
         .milestone-card {
             background: linear-gradient(135deg, rgba(58, 28, 5, 0.9), rgba(22, 22, 24, 0.95));
             border: 2px solid var(--accent);
             border-radius: 16px;
-            padding: 30px;
+            padding: 25px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(255, 159, 10, 0.25);
-            transition: transform 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 159, 10, 0.15);
         }
         
-        .milestone-card:hover {
-            transform: scale(1.03);
-        }
-
-        /* Adds a subtle glowing scanline effect */
         .milestone-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 200%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 159, 10, 0.3), transparent);
+            content: ''; position: absolute; top: 0; left: -100%; width: 200%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 159, 10, 0.1), transparent);
             animation: scanline 4s linear infinite;
-            transform: skewX(-20deg);
         }
-        
-        @keyframes scanline {
-            0% { left: -150%; }
-            100% { left: 150%; }
-        }
+        @keyframes scanline { 0% { left: -150%; } 100% { left: 150%; } }
 
-        .milestone-icon { 
-            font-size: 2rem; 
-            margin-bottom: 15px; 
-            display: flex; 
-            align-items: center;
-            color: var(--accent);
-            text-shadow: 0 0 15px var(--accent-glow);
-            position: relative;
-        }
-        
-        .milestone-icon span { margin-left: 15px; letter-spacing: 2px; }
+        .milestone-icon { font-size: 1.5rem; margin-bottom: 10px; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+        .milestone-text { font-size: 1rem; color: #ffcc80; line-height: 1.5; position: relative; }
 
-        .milestone-text { 
-            font-size: 1.1rem; 
-            color: #ffcc80; 
-            font-weight: 500;
-            line-height: 1.6;
-            position: relative; /* To appear above the scanline */
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-
-        /* Welcome Screen Overlay */
+        /* WELCOME SCREEN */
         #welcome-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            transition: opacity 0.7s ease-in-out;
-            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 70%);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            transition: opacity 0.5s ease;
         }
         .welcome-title {
-            font-size: 5rem;
-            font-weight: 700;
-            letter-spacing: 5px;
-            color: var(--accent);
-            text-shadow: 0 0 30px var(--accent-glow), 0 0 10px var(--accent);
-            margin-bottom: 30px;
+            font-size: 4rem; font-weight: 700; letter-spacing: 4px; color: var(--accent);
+            text-shadow: 0 0 30px var(--accent-glow); margin-bottom: 40px; text-align: center;
         }
         .start-btn {
-            padding: 20px 70px;
-            background: transparent;
-            border: 3px solid var(--accent);
-            color: var(--accent);
-            font-size: 1.8rem;
-            font-family: var(--font-stack);
-            font-weight: 700;
-            cursor: pointer;
-            border-radius: 4px; /* More angular for game feel */
-            margin-top: 40px;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(255, 159, 10, 0.3);
+            padding: 15px 50px; background: transparent; border: 2px solid var(--accent); color: var(--accent);
+            font-size: 1.5rem; font-family: var(--font-stack); font-weight: 700; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
+            box-shadow: 0 0 20px rgba(255, 159, 10, 0.2);
         }
-        .start-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--accent);
-            z-index: -1;
-            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            transform: scaleX(0);
-            transform-origin: right;
-        }
-        .start-btn:hover {
-            color: #000;
-            box-shadow: 0 0 50px var(--accent-glow);
-            border-color: var(--accent);
-        }
-        .start-btn:hover::before {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
-        .start-btn:active {
-            transform: scale(0.95);
-        }
+        .start-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 50px var(--accent-glow); }
 
-        /* Mobile Responsive */
-        @media (max-width: 1024px) {
-             .main-stage { 
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            .chart-card { height: 300px; }
-        }
-
-        @media (max-width: 768px) {
-            .main-stage { 
-                padding: 20px;
-            }
-            .top-nav {
-                height: 120px;
-                padding: 10px 15px;
-            }
-            .brand-container {
-                margin-right: 15px;
-            }
-            .brand { font-size: 1.2rem; }
-            .timeline-item {
-                min-width: 160px;
-                height: 85px;
-                padding: 12px;
-            }
-            .stage-header h1 { font-size: 2.5rem; }
-            .stage-header p { font-size: 1.1rem; }
-            .welcome-title { font-size: 3rem; }
-            .start-btn { font-size: 1.4rem; padding: 15px 40px; }
-        }
+        @media (max-width: 900px) { .main-stage { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -496,57 +221,47 @@
     <div class="top-nav">
         <div class="brand-container">
             <div class="brand">MISSION TIMELINE</div>
-            <div class="brand-subtitle">Select Objective</div>
+            <div class="brand-subtitle">Weekly Objectives</div>
         </div>
-        <div id="nav-container">
-            </div>
+        <div id="nav-container"></div>
     </div>
 
     <div class="main-stage">
-        
         <div class="stage-header">
-            <h1 id="day-title">Monday</h1>
-            <p id="day-subtitle">Focus: Foundations & Logic</p>
+            <h1 id="day-title">MONDAY</h1>
+            <p id="day-subtitle">Loading Mission Data...</p>
         </div>
 
         <div class="tasks-container">
-            <div class="section-title">
-                <span>MISSION OBJECTIVES</span>
-            </div>
-            <div id="task-list">
-                </div>
+            <div class="section-title">MISSION CHECKLIST</div>
+            <div id="task-list"></div>
         </div>
 
         <div class="stats-container">
-            
             <div class="chart-card">
-                <div class="section-title">ATTRIBUTE COMPOSITION</div>
+                <div class="section-title">ATTRIBUTE RADAR</div>
                 <canvas id="skillChart"></canvas>
             </div>
-
             <div class="milestone-card">
-                <div class="milestone-icon">🏆 <span>CRITICAL ACHIEVEMENT</span></div>
-                <div class="milestone-text" id="milestone-text">
-                    Complete all numericals with >90% accuracy before sleeping.
-                </div>
+                <div class="milestone-icon">🏆 CRITICAL GOAL</div>
+                <div class="milestone-text" id="milestone-text">---</div>
             </div>
-
         </div>
     </div>
 
     <script>
-        // --- DATA OBJECT ---
+        // --- 1. DATA ---
         const scheduleData = {
             "Monday": {
                 focus: "Foundations & Logic",
-                stats: [80, 70, 40, 30, 60], // [Technical, Math, Creative, Comm, ProbSolv]
+                stats: [80, 70, 40, 30, 60],
                 milestone: "Master Chapter 1 Numericals and configure Git environment with zero errors.",
                 tasks: [
-                    { time: "18:30 - 19:30", subject: "SPCM", title: "NPTEL Harbola Lecture + Notes" },
-                    { time: "19:45 - 20:45", subject: "OODP", title: "Stanford CS106B Coding Practice" },
-                    { time: "21:00 - 21:30", subject: "ACCA", title: "Fast Calculus / Ch 1 Numericals" },
-                    { time: "21:30 - 21:45", subject: "READ", title: "Any non-academic book" },
-                    { time: "21:45 - 22:30", subject: "SKILL", title: "New Skill: DSA / Git Basics" }
+                    { time: "18:30", subject: "SPCM", title: "NPTEL Harbola Lecture + Notes" },
+                    { time: "19:45", subject: "OODP", title: "Stanford CS106B Coding Practice" },
+                    { time: "21:00", subject: "ACCA", title: "Fast Calculus / Ch 1 Numericals" },
+                    { time: "21:30", subject: "READ", title: "Any non-academic book" },
+                    { time: "21:45", subject: "SKILL", title: "New Skill: DSA / Git Basics" }
                 ]
             },
             "Tuesday": {
@@ -554,21 +269,19 @@
                 stats: [60, 90, 30, 20, 50],
                 milestone: "Complete MIT 6.002 Problem Set without using any hints.",
                 tasks: [
-                    { time: "18:30 - 20:00", subject: "ACCA", title: "NPTEL Lecture + Problems" },
-                    { time: "20:15 - 21:15", subject: "EEE", title: "MIT 6.002 Lecture + Numericals" },
-                    { time: "21:30 - 21:45", subject: "READ", title: "Book Reading" },
-                    { time: "21:45 - 22:30", subject: "SKILL", title: "Programming Tools" }
+                    { time: "18:30", subject: "ACCA", title: "NPTEL Lecture + Problems" },
+                    { time: "20:15", subject: "EEE", title: "MIT 6.002 Lecture + Numericals" },
+                    { time: "21:45", subject: "SKILL", title: "Programming Tools" }
                 ]
             },
             "Wednesday": {
                 focus: "Coding & Communication",
                 stats: [85, 40, 50, 80, 70],
-                milestone: "Speak for 15 mins non-stop on a tech topic & solve 2 Medium LeetCode problems.",
+                milestone: "Speak for 15 mins non-stop on a tech topic.",
                 tasks: [
-                    { time: "18:30 - 19:30", subject: "SPCM", title: "Harbola Lecture + Notes" },
-                    { time: "19:45 - 20:45", subject: "OODP", title: "C++ Coding Practice" },
-                    { time: "21:00 - 21:30", subject: "CE", title: "Speaking / Writing Practice" },
-                    { time: "21:45 - 22:30", subject: "SKILL", title: "Competitive Coding" }
+                    { time: "18:30", subject: "SPCM", title: "Harbola Lecture + Notes" },
+                    { time: "19:45", subject: "OODP", title: "C++ Coding Practice" },
+                    { time: "21:00", subject: "CE", title: "Speaking / Writing Practice" }
                 ]
             },
             "Thursday": {
@@ -576,127 +289,64 @@
                 stats: [75, 80, 40, 30, 85],
                 milestone: "Derive all SPCM formulas from scratch without looking at notes.",
                 tasks: [
-                    { time: "18:30 - 20:00", subject: "ACCA", title: "Chapter 1 Deep Practice" },
-                    { time: "20:15 - 21:15", subject: "SPCM", title: "Formulas + Octave Work" },
-                    { time: "21:45 - 22:30", subject: "SKILL", title: "System Design Basics" }
+                    { time: "18:30", subject: "ACCA", title: "Chapter 1 Deep Practice" },
+                    { time: "20:15", subject: "SPCM", title: "Formulas + Octave Work" },
+                    { time: "21:45", subject: "SKILL", title: "System Design Basics" }
                 ]
             },
             "Friday": {
                 focus: "Engineering & Interview",
                 stats: [90, 60, 40, 60, 80],
-                milestone: "Complete a simulated 30-minute coding interview session successfully.",
+                milestone: "Complete a simulated 30-minute coding interview session.",
                 tasks: [
-                    { time: "18:30 - 19:45", subject: "EEE", title: "MIT Lecture + Problems" },
-                    { time: "20:00 - 21:30", subject: "OODP", title: "Stanford CS106B Session" },
-                    { time: "21:45 - 22:30", subject: "SKILL", title: "Interview Prep / Patterns" }
+                    { time: "18:30", subject: "EEE", title: "MIT Lecture + Problems" },
+                    { time: "20:00", subject: "OODP", title: "Stanford CS106B Session" },
+                    { time: "21:45", subject: "SKILL", title: "Interview Prep / Patterns" }
                 ]
             },
             "Saturday": {
                 focus: "High Volume Practice",
                 stats: [80, 80, 60, 20, 90],
-                milestone: "Clear entire backlog of SPCM numericals and two ACCA problem sets.",
+                milestone: "Clear entire backlog of SPCM numericals.",
                 tasks: [
-                    { time: "17:00 - 19:00", subject: "SPCM", title: "2 Lectures + Numericals" },
-                    { time: "19:15 - 20:45", subject: "ACCA", title: "Mixed Problems" },
-                    { time: "21:00 - 22:00", subject: "OODP", title: "Coding Practice" },
-                    { time: "22:15 - 23:00", subject: "SKILL", title: "Advanced Tech Learning" }
+                    { time: "17:00", subject: "SPCM", title: "2 Lectures + Numericals" },
+                    { time: "19:15", subject: "ACCA", title: "Mixed Problems" },
+                    { time: "21:00", subject: "OODP", title: "Coding Practice" }
                 ]
             },
             "Sunday": {
                 focus: "Revision & Portfolio",
                 stats: [50, 50, 80, 50, 60],
-                milestone: "Finalize GitHub Portfolio project update and plan next week's roadmap.",
+                milestone: "Finalize GitHub Portfolio project update.",
                 tasks: [
-                    { time: "16:30 - 18:00", subject: "ACCA", title: "Full Revision" },
-                    { time: "18:15 - 19:45", subject: "EEE", title: "Revision + MIT Numericals" },
-                    { time: "20:00 - 21:00", subject: "SPCM", title: "Physics Revision" },
-                    { time: "22:15 - 23:00", subject: "SKILL", title: "Portfolio Work" }
+                    { time: "16:30", subject: "ACCA", title: "Full Revision" },
+                    { time: "18:15", subject: "EEE", title: "Revision + MIT Numericals" },
+                    { time: "22:15", subject: "SKILL", title: "Portfolio Work" }
                 ]
             }
         };
 
-        // --- CHART SETUP ---
-        let skillChart;
-
-        function initChart() {
-            const ctx = document.getElementById('skillChart').getContext('2d');
-            
-            // FIXED: Removed the invalid variable "var(--font-body)" which caused the crash
-            const bodyFontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
-            
-            Chart.defaults.font.family = "'Rajdhani', sans-serif"; 
-            
-            skillChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['TECH', 'MATH', 'CREATIVE', 'COMM', 'PROBLEM SOLVING'],
-                    datasets: [{
-                        label: 'Attribute Level',
-                        data: [0,0,0,0,0],
-                        backgroundColor: 'rgba(255, 159, 10, 0.2)',
-                        borderColor: '#ff9f0a',
-                        pointBackgroundColor: '#ff9f0a',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: '#ff9f0a',
-                        borderWidth: 2,
-                        pointRadius: 5,
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(255,255,255,0.15)' },
-                            grid: { color: 'rgba(255,255,255,0.15)' },
-                            pointLabels: { 
-                                color: '#86868b', 
-                                font: { size: 13, weight: '600', family: "'Rajdhani', sans-serif" },
-                                padding: 10
-                            },
-                            suggestedMin: 0,
-                            suggestedMax: 100,
-                            ticks: { display: false, backdropColor: 'transparent' }
-                        }
-                    },
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(22, 22, 24, 0.95)',
-                            titleColor: '#ff9f0a',
-                            bodyColor: '#f5f5f7',
-                            borderColor: '#ff9f0a',
-                            borderWidth: 1,
-                            padding: 10,
-                            displayColors: false,
-                            titleFont: { family: "'Rajdhani', sans-serif", size: 14 },
-                            bodyFont: { family: bodyFontFamily }, /* Fixed here */
-                            callbacks: {
-                                label: function(context) {
-                                    return ` Level: ${context.raw}%`;
-                                }
-                            }
-                        }
-                    },
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 1500,
-                        easing: 'easeInOutQuart'
-                    }
-                }
-            });
-        }
-
-        // --- APP LOGIC ---
+        // --- 2. LOGIC ---
+        let skillChart = null;
 
         function startApp() {
-            document.getElementById('welcome-overlay').style.opacity = '0';
+            // Force the overlay to disappear
+            const overlay = document.getElementById('welcome-overlay');
+            overlay.style.opacity = '0';
+            
+            // Wait for fade, then load content
             setTimeout(() => {
-                document.getElementById('welcome-overlay').style.display = 'none';
+                overlay.style.display = 'none';
                 renderNav();
                 loadDay('Monday');
-            }, 700);
-            initChart();
+                
+                // Initialize chart safely
+                try {
+                    initChart();
+                } catch(e) {
+                    console.log("Chart failed to load:", e);
+                }
+            }, 500);
         }
 
         function renderNav() {
@@ -708,9 +358,8 @@
                 item.className = 'timeline-item';
                 item.onclick = () => loadDay(day);
                 item.innerHTML = `
-                    <span class="timeline-date">DAY // ${day.toUpperCase().substring(0, 3)}</span>
+                    <span class="timeline-date">DAY // ${day.substring(0,3).toUpperCase()}</span>
                     <div class="timeline-title">${day}</div>
-                    <div class="timeline-desc">${scheduleData[day].focus}</div>
                 `;
                 item.dataset.day = day;
                 container.appendChild(item);
@@ -718,67 +367,85 @@
         }
 
         function loadDay(day) {
-            const navItems = document.querySelectorAll('.timeline-item');
-            navItems.forEach(el => {
+            // Highlight active day
+            document.querySelectorAll('.timeline-item').forEach(el => {
                 el.classList.remove('active');
                 if(el.dataset.day === day) {
                     el.classList.add('active');
-                    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    el.scrollIntoView({ behavior: 'smooth', inline: 'center' });
                 }
             });
 
             const data = scheduleData[day];
 
-            const title = document.getElementById('day-title');
-            const subtitle = document.getElementById('day-subtitle');
-            
-            title.style.opacity = 0;
-            subtitle.style.opacity = 0;
-            title.style.transform = 'translateY(-10px)';
-            
-            setTimeout(() => {
-                title.innerText = day;
-                subtitle.innerText = "Focus: " + data.focus;
-                title.style.opacity = 1;
-                subtitle.style.opacity = 1;
-                title.style.transform = 'translateY(0)';
-            }, 250);
-
+            // Update Text
+            document.getElementById('day-title').innerText = day;
+            document.getElementById('day-subtitle').innerText = "Focus: " + data.focus;
             document.getElementById('milestone-text').innerText = data.milestone;
 
-            const taskContainer = document.getElementById('task-list');
-            taskContainer.innerHTML = '';
+            // Render Tasks
+            const list = document.getElementById('task-list');
+            list.innerHTML = '';
             
-            data.tasks.forEach((task, index) => {
-                const div = document.createElement('div');
-                div.className = 'task-item';
-                div.style.animation = `slideIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards ${index * 0.08}s`;
-                div.innerHTML = `
+            data.tasks.forEach((task, i) => {
+                const row = document.createElement('div');
+                row.className = 'task-item';
+                // Simple inline animation
+                row.style.animation = `fadeIn 0.3s ease forwards ${i * 0.1}s`;
+                row.style.opacity = '0'; 
+                
+                row.innerHTML = `
                     <div class="checkbox" onclick="this.classList.toggle('checked')"></div>
                     <div class="task-content">
                         <span class="task-time">${task.time}</span>
                         <span class="task-name">${task.title} <span class="task-subject">${task.subject}</span></span>
                     </div>
                 `;
-                taskContainer.appendChild(div);
+                list.appendChild(row);
             });
 
+            // Update Chart if it exists
             if(skillChart) {
                 skillChart.data.datasets[0].data = data.stats;
                 skillChart.update();
             }
         }
 
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes slideIn {
-                from { opacity: 0; transform: translateX(-30px); }
-                to { opacity: 1; transform: translateX(0); }
-            }
-            #day-title, #day-subtitle { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        `;
-        document.head.appendChild(style);
+        function initChart() {
+            // Safety check: If Chart library isn't loaded, stop.
+            if(typeof Chart === 'undefined') return;
 
+            const ctx = document.getElementById('skillChart').getContext('2d');
+            skillChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['TECH', 'MATH', 'CREATIVE', 'COMM', 'LOGIC'],
+                    datasets: [{
+                        data: [0,0,0,0,0],
+                        backgroundColor: 'rgba(255, 159, 10, 0.2)',
+                        borderColor: '#ff9f0a',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#fff'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: { color: '#333' },
+                            grid: { color: '#333' },
+                            pointLabels: { color: '#888', font: { size: 12 } },
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // Add Keyframe Animation safely
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = "@keyframes fadeIn { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(10px); } }";
+        document.head.appendChild(styleSheet);
     </script>
 </body>
 </html>
