@@ -535,7 +535,7 @@
     </div>
 
     <script>
-        // --- DATA OBJECT (Same as before) ---
+        // --- DATA OBJECT ---
         const scheduleData = {
             "Monday": {
                 focus: "Foundations & Logic",
@@ -620,7 +620,12 @@
 
         function initChart() {
             const ctx = document.getElementById('skillChart').getContext('2d');
-            Chart.defaults.font.family = "'Rajdhani', sans-serif"; // Use game font for chart
+            
+            // FIXED: Removed the invalid variable "var(--font-body)" which caused the crash
+            const bodyFontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+            
+            Chart.defaults.font.family = "'Rajdhani', sans-serif"; 
+            
             skillChart = new Chart(ctx, {
                 type: 'radar',
                 data: {
@@ -665,7 +670,7 @@
                             padding: 10,
                             displayColors: false,
                             titleFont: { family: "'Rajdhani', sans-serif", size: 14 },
-                            bodyFont: { family: var(--font-body) },
+                            bodyFont: { family: bodyFontFamily }, /* Fixed here */
                             callbacks: {
                                 label: function(context) {
                                     return ` Level: ${context.raw}%`;
@@ -718,14 +723,12 @@
                 el.classList.remove('active');
                 if(el.dataset.day === day) {
                     el.classList.add('active');
-                    // Auto-scroll to the active item centers it
                     el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                 }
             });
 
             const data = scheduleData[day];
 
-            // Animate Header Update
             const title = document.getElementById('day-title');
             const subtitle = document.getElementById('day-subtitle');
             
@@ -743,7 +746,6 @@
 
             document.getElementById('milestone-text').innerText = data.milestone;
 
-            // Update Tasks with Staggered Animation
             const taskContainer = document.getElementById('task-list');
             taskContainer.innerHTML = '';
             
@@ -761,14 +763,12 @@
                 taskContainer.appendChild(div);
             });
 
-            // Update Chart
             if(skillChart) {
                 skillChart.data.datasets[0].data = data.stats;
                 skillChart.update();
             }
         }
 
-        // Add animations dynamically
         const style = document.createElement('style');
         style.innerHTML = `
             @keyframes slideIn {
