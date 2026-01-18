@@ -3,380 +3,486 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly Self-Study Timetable</title>
+    <title>2026 Student Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-main: #e0e0e0;
-            --text-sub: #b0b0b0;
-            --border-color: #333;
-            --accent-color: #6200ea;
-            
-            /* Subject Colors */
-            --spcm: #4fc3f7;
-            --oodp: #81c784;
-            --acca: #ffb74d;
-            --eee: #ffd54f;
-            --ce: #4db6ac;
-            --reading: #ba68c8;
-            --skill: #f06292;
-            --default: #90a4ae;
+            --bg-body: #0a0a0a;
+            --bg-panel: #161618;
+            --bg-hover: #2c2c2e;
+            --text-main: #f5f5f7;
+            --text-sub: #86868b;
+            --accent: #ff9f0a; /* Apple-like Orange */
+            --border: #38383a;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--bg-body);
             color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        h1 {
-            text-align: center;
-            font-weight: 300;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--text-sub);
-            font-size: 0.9rem;
-            margin-bottom: 30px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        .day-column {
-            background-color: var(--card-bg);
-            border-radius: 12px;
+            font-family: var(--font-stack);
+            height: 100vh;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s ease;
+            display: flex;
         }
 
-        .day-column:hover {
-            transform: translateY(-2px);
-            border-color: #555;
+        /* --- SIDEBAR TIMELINE --- */
+        .sidebar {
+            width: 300px;
+            background-color: #000;
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
         }
 
-        .day-header {
-            background-color: #2c2c2c;
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
+        .brand {
+            font-size: 0.9rem;
+            color: var(--text-sub);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            font-weight: 700;
         }
 
-        .schedule-list {
-            padding: 10px;
-        }
-
-        .task-card {
-            background-color: #252525;
-            margin-bottom: 10px;
-            padding: 12px;
+        .timeline-item {
+            padding: 15px 15px 15px 25px;
+            margin-bottom: 5px;
+            cursor: pointer;
             border-radius: 8px;
-            border-left: 4px solid var(--default);
+            transition: all 0.2s ease;
+            border-left: 2px solid #333;
             position: relative;
         }
 
-        .task-time {
-            font-size: 0.85rem;
+        .timeline-item:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .timeline-item.active {
+            background-color: var(--bg-panel);
+            border-left: 2px solid var(--accent);
+        }
+
+        .timeline-item.active h3 { color: var(--accent); }
+
+        .timeline-date {
+            font-size: 0.75rem;
             color: var(--text-sub);
             margin-bottom: 4px;
             display: block;
+        }
+
+        .timeline-title {
+            font-size: 1rem;
             font-weight: 600;
+            color: var(--text-main);
         }
 
-        .task-subject {
+        .timeline-desc {
             font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        /* --- MAIN STAGE --- */
+        .main-stage {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr; /* Content vs Chart */
+            grid-template-rows: auto 1fr;
+            gap: 30px;
+            background: radial-gradient(circle at top right, #1a1a1a 0%, #0a0a0a 40%);
+        }
+
+        /* Header Area */
+        .stage-header {
+            grid-column: 1 / -1;
+            margin-bottom: 10px;
+        }
+        .stage-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .stage-header p {
+            color: var(--text-sub);
+            font-size: 1.1rem;
+        }
+
+        /* Tasks Section (Left) */
+        .tasks-container {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            opacity: 0.9;
-            margin-bottom: 4px;
-            display: inline-block;
-            padding: 2px 6px;
+            letter-spacing: 1.5px;
+            color: var(--text-sub);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: 0.2s;
+        }
+
+        .task-item:last-child { border-bottom: none; }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-sub);
             border-radius: 4px;
-            background: rgba(255,255,255,0.05);
+            margin-right: 15px;
+            margin-top: 3px;
+            cursor: pointer;
+            position: relative;
         }
 
-        .task-desc {
-            font-size: 0.95rem;
-            font-weight: 500;
+        .checkbox.checked {
+            background-color: var(--accent);
+            border-color: var(--accent);
         }
 
-        /* Color Coding Classes */
-        .spcm { border-left-color: var(--spcm); }
-        .spcm .task-subject { color: var(--spcm); }
-
-        .oodp { border-left-color: var(--oodp); }
-        .oodp .task-subject { color: var(--oodp); }
-
-        .acca { border-left-color: var(--acca); }
-        .acca .task-subject { color: var(--acca); }
-
-        .eee { border-left-color: var(--eee); }
-        .eee .task-subject { color: var(--eee); }
-
-        .ce { border-left-color: var(--ce); }
-        .ce .task-subject { color: var(--ce); }
-
-        .reading { border-left-color: var(--reading); }
-        .reading .task-subject { color: var(--reading); }
-
-        .skill { border-left-color: var(--skill); }
-        .skill .task-subject { color: var(--skill); }
-
-        @media (max-width: 768px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-            body {
-                padding: 10px;
-            }
+        .checkbox.checked::after {
+            content: '✔';
+            position: absolute;
+            font-size: 12px;
+            color: #000;
+            top: -1px;
+            left: 3px;
         }
-        
-        /* Print Styles */
-        @media print {
-            body { background-color: #fff; color: #000; }
-            .day-column { box-shadow: none; border: 1px solid #ccc; background: #fff; page-break-inside: avoid; }
-            .task-card { background: #f9f9f9; border-bottom: 1px solid #eee; }
-            h1, .subtitle { color: #000; }
+
+        .task-content { flex: 1; }
+        .task-time { font-size: 0.8rem; color: var(--accent); font-weight: 600; display: block; margin-bottom: 4px; }
+        .task-name { font-size: 1rem; font-weight: 500; }
+        .task-subject { 
+            font-size: 0.7rem; 
+            background: #333; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            margin-left: 8px; 
+            vertical-align: middle; 
+            color: #ccc;
+        }
+
+        /* Stats & Chart Section (Right) */
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chart-card {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            height: 350px;
+            position: relative;
+        }
+
+        .milestone-card {
+            background: linear-gradient(45deg, #3a1c05, #161618);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .milestone-icon { font-size: 1.5rem; margin-bottom: 10px; display: block; }
+        .milestone-text { font-size: 0.9rem; color: #ffcc80; }
+
+        /* Welcome Screen Overlay */
+        #welcome-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease;
+        }
+        .start-btn {
+            padding: 15px 40px;
+            background: transparent;
+            border: 1px solid var(--text-main);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 30px;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .start-btn:hover {
+            background: var(--text-main);
+            color: #000;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .main-stage { grid-template-columns: 1fr; }
+            .sidebar { display: none; /* In a real app, use a hamburger menu */ }
         }
     </style>
 </head>
 <body>
 
-    <h1>Weekly Self-Study Timetable</h1>
-    <div class="subtitle">No college classes included. Dedicated to self-study & skill development.</div>
-
-    <div class="grid-container">
-        
-        <div class="day-column">
-            <div class="day-header">Monday</div>
-            <div class="schedule-list">
-                <div class="task-card spcm">
-                    <span class="task-time">18:30 - 19:30</span>
-                    <span class="task-subject">SPCM</span>
-                    <div class="task-desc">NPTEL Harbola Lecture + Notes</div>
-                </div>
-                <div class="task-card oodp">
-                    <span class="task-time">19:45 - 20:45</span>
-                    <span class="task-subject">OODP</span>
-                    <div class="task-desc">Stanford CS106B Coding Practice</div>
-                </div>
-                <div class="task-card acca">
-                    <span class="task-time">21:00 - 21:30</span>
-                    <span class="task-subject">ACCA</span>
-                    <div class="task-desc">Fast Calculus / Chapter 1 Numericals</div>
-                </div>
-                <div class="task-card reading">
-                    <span class="task-time">21:30 - 21:45</span>
-                    <span class="task-subject">Book Reading</span>
-                    <div class="task-desc">Any non-academic book</div>
-                </div>
-                <div class="task-card skill">
-                    <span class="task-time">21:45 - 22:30</span>
-                    <span class="task-subject">Skill</span>
-                    <div class="task-desc">New skill (DSA, Git, Linux, ML, etc.)</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="day-column">
-            <div class="day-header">Tuesday</div>
-            <div class="schedule-list">
-                <div class="task-card acca">
-                    <span class="task-time">18:30 - 20:00</span>
-                    <span class="task-subject">ACCA</span>
-                    <div class="task-desc">NPTEL Lecture + Problems</div>
-                </div>
-                <div class="task-card eee">
-                    <span class="task-time">20:15 - 21:15</span>
-                    <span class="task-subject">EEE</span>
-                    <div class="task-desc">MIT 6.002 Lecture + Numericals</div>
-                </div>
-                <div class="task-card reading">
-                    <span class="task-time">21:30 - 21:45</span>
-                    <span class="task-subject">Book Reading</span>
-                    <div class="task-desc">Any non-academic book</div>
-                </div>
-                <div class="task-card skill">
-                    <span class="task-time">21:45 - 22:30</span>
-                    <span class="task-subject">Skill</span>
-                    <div class="task-desc">Programming / Tools / Tech Skill</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="day-column">
-            <div class="day-header">Wednesday</div>
-            <div class="schedule-list">
-                <div class="task-card spcm">
-                    <span class="task-time">18:30 - 19:30</span>
-                    <span class="task-subject">SPCM</span>
-                    <div class="task-desc">Harbola Lecture + Notes</div>
-                </div>
-                <div class="task-card oodp">
-                    <span class="task-time">19:45 - 20:45</span>
-                    <span class="task-subject">OODP</span>
-                    <div class="task-desc">C++ Coding Practice</div>
-                </div>
-                <div class="task-card ce">
-                    <span class="task-time">21:00 - 21:30</span>
-                    <span class="task-subject">CE</span>
-                    <div class="task-desc">Speaking / Writing Practice</div>
-                </div>
-                <div class="task-card reading">
-                    <span class="task-time">21:30 - 21:45</span>
-                    <span class="task-subject">Book Reading</span>
-                    <div class="task-desc">Any non-academic book</div>
-                </div>
-                <div class="task-card skill">
-                    <span class="task-time">21:45 - 22:30</span>
-                    <span class="task-subject">Skill</span>
-                    <div class="task-desc">Problem solving / Competitive coding</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="day-column">
-            <div class="day-header">Thursday</div>
-            <div class="schedule-list">
-                <div class="task-card acca">
-                    <span class="task-time">18:30 - 20:00</span>
-                    <span class="task-subject">ACCA</span>
-                    <div class="task-desc">Chapter 1 Deep Practice</div>
-                </div>
-                <div class="task-card spcm">
-                    <span class="task-time">20:15 - 21:15</span>
-                    <span class="task-subject">SPCM</span>
-                    <div class="task-desc">Formulas + Octave Work</div>
-                </div>
-                <div class="task-card reading">
-                    <span class="task-time">21:30 - 21:45</span>
-                    <span class="task-subject">Book Reading</span>
-                    <div class="task-desc">Any non-academic book</div>
-                </div>
-                <div class="task-card skill">
-                    <span class="task-time">21:45 - 22:30</span>
-                    <span class="task-subject">Skill</span>
-                    <div class="task-desc">DSA / ML / System Design Basics</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="day-column">
-            <div class="day-header">Friday</div>
-            <div class="schedule-list">
-                <div class="task-card eee">
-                    <span class="task-time">18:30 - 19:45</span>
-                    <span class="task-subject">EEE</span>
-                    <div class="task-desc">MIT 6.002 Lecture + Problems</div>
-                </div>
-                <div class="task-card oodp">
-                    <span class="task-time">20:00 - 21:30</span>
-                    <span class="task-subject">OODP</span>
-                    <div class="task-desc">Stanford CS106B Coding Session</div>
-                </div>
-                <div class="task-card reading">
-                    <span class="task-time">21:30 - 21:45</span>
-                    <span class="task-subject">Book Reading</span>
-                    <div class="task-desc">Any non-academic book</div>
-                </div>
-                <div class="task-card skill">
-                    <span class="task-time">21:45 - 22:30</span>
-                    <span class="task-subject">Skill</span>
-                    <div class="task-desc">Interview prep / Coding patterns</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="day-column">
-            <div class="day-header">Saturday</div>
-            <div class="schedule-list">
-                <div class="task-card spcm">
-                    <span class="task-time">17:00 - 19:00</span>
-                    <span class="task-subject">SPCM</span>
-                    <div class="task-desc">2 Lectures + Numericals</div>
-                </div>
-                <div class="task-card acca">
-                    <span class="task-time">19:15 - 20:45</span>
-                    <span class="task-subject">ACCA</span>
-                    <div class="task-desc">Mixed Problems</div>
-                </div>
-                <div class="task-card oodp">
-                    <span class="task-time">21:00 - 22:00</span>
-                    <span class="task-subject">OODP</span>
-                    <div class="task-desc">Coding Practice</div>
-                </div>
-                <div class="task-card reading">
-                    <span class="task-time">22:00 - 22:15</span>
-                    <span class="task-subject">Book Reading</span>
-                    <div class="task-desc">Any non-academic book</div>
-                </div>
-                <div class="task-card skill">
-                    <span class="task-time">22:15 - 23:00</span>
-                    <span class="task-subject">Skill</span>
-                    <div class="task-desc">Advanced tech skill learning</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="day-column">
-            <div class="day-header">Sunday</div>
-            <div class="schedule-list">
-                <div class="task-card acca">
-                    <span class="task-time">16:30 - 18:00</span>
-                    <span class="task-subject">ACCA</span>
-                    <div class="task-desc">Full Revision + Numericals</div>
-                </div>
-                <div class="task-card eee">
-                    <span class="task-time">18:15 - 19:45</span>
-                    <span class="task-subject">EEE</span>
-                    <div class="task-desc">Revision + MIT Numericals</div>
-                </div>
-                <div class="task-card spcm">
-                    <span class="task-time">20:00 - 21:00</span>
-                    <span class="task-subject">SPCM</span>
-                    <div class="task-desc">Weekly Physics Revision</div>
-                </div>
-                <div class="task-card oodp">
-                    <span class="task-time">21:00 - 22:00</span>
-                    <span class="task-subject">OODP</span>
-                    <div class="task-desc">Coding Challenge</div>
-                </div>
-                <div class="task-card reading">
-                    <span class="task-time">22:00 - 22:15</span>
-                    <span class="task-subject">Book Reading</span>
-                    <div class="task-desc">Any non-academic book</div>
-                </div>
-                <div class="task-card skill">
-                    <span class="task-time">22:15 - 23:00</span>
-                    <span class="task-subject">Skill</span>
-                    <div class="task-desc">Internship prep / Portfolio work</div>
-                </div>
-            </div>
-        </div>
-
+    <div id="welcome-overlay">
+        <h1 style="font-weight: 300; letter-spacing: 2px;">STUDY ROADMAP 2026</h1>
+        <button class="start-btn" onclick="startApp()">Initialize Dashboard</button>
     </div>
+
+    <div class="sidebar">
+        <div class="brand">Weekly Timeline</div>
+        <div id="nav-container">
+            </div>
+    </div>
+
+    <div class="main-stage">
+        
+        <div class="stage-header">
+            <h1 id="day-title">Monday</h1>
+            <p id="day-subtitle">Focus: Algorithms & Calculus</p>
+        </div>
+
+        <div class="tasks-container">
+            <div class="section-title">
+                <span>KEY ACTIONS & DRILLS</span>
+            </div>
+            <div id="task-list">
+                </div>
+        </div>
+
+        <div class="stats-container">
+            
+            <div class="chart-card">
+                <div class="section-title">SKILL COMPOSITION</div>
+                <canvas id="skillChart"></canvas>
+            </div>
+
+            <div class="milestone-card">
+                <span class="milestone-icon">🏁 Milestone Goal</span>
+                <div class="milestone-text" id="milestone-text">
+                    Complete all numericals with >90% accuracy before sleeping.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- DATA OBJECT ---
+        const scheduleData = {
+            "Monday": {
+                focus: "Foundations & Logic",
+                stats: [80, 70, 40, 30, 60], // [Technical, Math, Creative, Comm, ProbSolv]
+                milestone: "Master Chapter 1 Numericals and configure Git environment.",
+                tasks: [
+                    { time: "18:30 - 19:30", subject: "SPCM", title: "NPTEL Harbola Lecture + Notes" },
+                    { time: "19:45 - 20:45", subject: "OODP", title: "Stanford CS106B Coding Practice" },
+                    { time: "21:00 - 21:30", subject: "ACCA", title: "Fast Calculus / Ch 1 Numericals" },
+                    { time: "21:30 - 21:45", subject: "READ", title: "Any non-academic book" },
+                    { time: "21:45 - 22:30", subject: "SKILL", title: "New Skill: DSA / Git Basics" }
+                ]
+            },
+            "Tuesday": {
+                focus: "Circuits & Math",
+                stats: [60, 90, 30, 20, 50],
+                milestone: "Complete MIT 6.002 Problem Set without hints.",
+                tasks: [
+                    { time: "18:30 - 20:00", subject: "ACCA", title: "NPTEL Lecture + Problems" },
+                    { time: "20:15 - 21:15", subject: "EEE", title: "MIT 6.002 Lecture + Numericals" },
+                    { time: "21:30 - 21:45", subject: "READ", title: "Book Reading" },
+                    { time: "21:45 - 22:30", subject: "SKILL", title: "Programming Tools" }
+                ]
+            },
+            "Wednesday": {
+                focus: "Coding & Communication",
+                stats: [85, 40, 50, 80, 70],
+                milestone: "Speak for 15 mins non-stop & Solve 2 Medium LeetCode problems.",
+                tasks: [
+                    { time: "18:30 - 19:30", subject: "SPCM", title: "Harbola Lecture + Notes" },
+                    { time: "19:45 - 20:45", subject: "OODP", title: "C++ Coding Practice" },
+                    { time: "21:00 - 21:30", subject: "CE", title: "Speaking / Writing Practice" },
+                    { time: "21:45 - 22:30", subject: "SKILL", title: "Competitive Coding" }
+                ]
+            },
+            "Thursday": {
+                focus: "Deep Work & Systems",
+                stats: [75, 80, 40, 30, 85],
+                milestone: "Derive all SPCM formulas from scratch.",
+                tasks: [
+                    { time: "18:30 - 20:00", subject: "ACCA", title: "Chapter 1 Deep Practice" },
+                    { time: "20:15 - 21:15", subject: "SPCM", title: "Formulas + Octave Work" },
+                    { time: "21:45 - 22:30", subject: "SKILL", title: "System Design Basics" }
+                ]
+            },
+            "Friday": {
+                focus: "Engineering & Interview",
+                stats: [90, 60, 40, 60, 80],
+                milestone: "Simulate a 30-min coding interview session.",
+                tasks: [
+                    { time: "18:30 - 19:45", subject: "EEE", title: "MIT Lecture + Problems" },
+                    { time: "20:00 - 21:30", subject: "OODP", title: "Stanford CS106B Session" },
+                    { time: "21:45 - 22:30", subject: "SKILL", title: "Interview Prep / Patterns" }
+                ]
+            },
+            "Saturday": {
+                focus: "High Volume Practice",
+                stats: [80, 80, 60, 20, 90],
+                milestone: "Clear backlog of SPCM numericals.",
+                tasks: [
+                    { time: "17:00 - 19:00", subject: "SPCM", title: "2 Lectures + Numericals" },
+                    { time: "19:15 - 20:45", subject: "ACCA", title: "Mixed Problems" },
+                    { time: "21:00 - 22:00", subject: "OODP", title: "Coding Practice" },
+                    { time: "22:15 - 23:00", subject: "SKILL", title: "Advanced Tech Learning" }
+                ]
+            },
+            "Sunday": {
+                focus: "Revision & Portfolio",
+                stats: [50, 50, 80, 50, 60],
+                milestone: "Update GitHub Portfolio and plan next week.",
+                tasks: [
+                    { time: "16:30 - 18:00", subject: "ACCA", title: "Full Revision" },
+                    { time: "18:15 - 19:45", subject: "EEE", title: "Revision + MIT Numericals" },
+                    { time: "20:00 - 21:00", subject: "SPCM", title: "Physics Revision" },
+                    { time: "22:15 - 23:00", subject: "SKILL", title: "Portfolio Work" }
+                ]
+            }
+        };
+
+        // --- CHART SETUP ---
+        let skillChart;
+
+        function initChart() {
+            const ctx = document.getElementById('skillChart').getContext('2d');
+            skillChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Technical', 'Math', 'Creative', 'Communication', 'Problem Solving'],
+                    datasets: [{
+                        label: 'Relative Intensity',
+                        data: [0,0,0,0,0], // Initial dummy data
+                        backgroundColor: 'rgba(255, 159, 10, 0.2)',
+                        borderColor: '#ff9f0a',
+                        pointBackgroundColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: { color: '#333' },
+                            grid: { color: '#333' },
+                            pointLabels: { color: '#888', font: {size: 10} },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false } // Hide numbers on axis
+                        }
+                    },
+                    plugins: { legend: { display: false } },
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // --- APP LOGIC ---
+
+        function startApp() {
+            document.getElementById('welcome-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('welcome-overlay').style.display = 'none';
+                renderSidebar();
+                loadDay('Monday'); // Load first day
+            }, 500);
+            initChart();
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById('nav-container');
+            container.innerHTML = '';
+            
+            Object.keys(scheduleData).forEach(day => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.onclick = () => loadDay(day);
+                item.innerHTML = `
+                    <span class="timeline-date">WEEKLY</span>
+                    <div class="timeline-title">${day}</div>
+                    <div class="timeline-desc">${scheduleData[day].focus}</div>
+                `;
+                item.dataset.day = day;
+                container.appendChild(item);
+            });
+        }
+
+        function loadDay(day) {
+            // Update Active Sidebar State
+            document.querySelectorAll('.timeline-item').forEach(el => {
+                el.classList.remove('active');
+                if(el.dataset.day === day) el.classList.add('active');
+            });
+
+            const data = scheduleData[day];
+
+            // Update Header
+            document.getElementById('day-title').innerText = day;
+            document.getElementById('day-subtitle').innerText = "Focus: " + data.focus;
+            document.getElementById('milestone-text').innerText = data.milestone;
+
+            // Update Tasks with Animation
+            const taskContainer = document.getElementById('task-list');
+            taskContainer.innerHTML = '';
+            
+            data.tasks.forEach((task, index) => {
+                const div = document.createElement('div');
+                div.className = 'task-item';
+                div.style.animation = `fadeIn 0.3s ease forwards ${index * 0.1}s`;
+                div.innerHTML = `
+                    <div class="checkbox" onclick="this.classList.toggle('checked')"></div>
+                    <div class="task-content">
+                        <span class="task-time">${task.time}</span>
+                        <span class="task-name">${task.title} <span class="task-subject">${task.subject}</span></span>
+                    </div>
+                `;
+                taskContainer.appendChild(div);
+            });
+
+            // Update Chart
+            if(skillChart) {
+                skillChart.data.datasets[0].data = data.stats;
+                skillChart.update();
+            }
+        }
+
+        // Add fade animation style dynamically
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+    </script>
 </body>
 </html>
